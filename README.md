@@ -16,7 +16,8 @@ simple and small, but also modern and fully featured.
 
 ## What Is lwIP?
 
-lwIP is a small independent implementation of the TCP/IP protocol suite.
+lwIP is a small independent implementation of the TCP/IP protocol suite created by Adam Dunkels <adam@sics.se> and
+Leon Woestenberg <leon.woestenberg@gmx.net>.
 
 The focus of the lwIP TCP/IP implementation is to reduce the RAM usage
 while still having a full scale TCP. This making lwIP suitable for use
