@@ -14,7 +14,7 @@ export INSTALL_DIR=$WORKDIR                   # Change this if you want.
 mkdir -p $WORKDIR                               # Create workspace.
 cd $WORKDIR                                     # Switch to workspace.
 git clone https://github.com/Bois-Barganhados-Studio/nanvix-network-driver.git  # Clone repository.
-cd nanvix                                       # Switch to source tree.
+cd nanvix-network-driver                                       # Switch to source tree.
 ```
 
 ## 2. Install Dependencies
