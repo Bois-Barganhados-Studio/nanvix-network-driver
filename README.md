@@ -39,7 +39,7 @@ or in a virtual machine, using a system image.
 
 - Nanvix is a free software that is under the GPL V3 license and is maintained by Pedro Henrique Penna. Any questions or suggestions send him an email: <pedrohenriquepenna@gmail.com>
 - Nanvix Network Driver is a free plugin that is under the GPL V3 license and is maintained by Leon Junio Martins, Felipe Moura, Daniel Benevides and Gustavo Oliveira.
-- [@Leon Junio](https://www.github.com/leon-junio)
+- [@Leon Martins](https://www.github.com/leon-junio)
 - [@Daniel Benevides](https://www.github.com/DanGBenevides)
 - [@Gustavo Gomes](https://www.github.com/GustavGomes)
 - [@Felipe Moura](https://www.github.com/felagmoura)
