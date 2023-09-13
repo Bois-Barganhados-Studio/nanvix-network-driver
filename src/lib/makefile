@@ -19,14 +19,20 @@
 
 # Conflicts.
 .PHONY: libc
+.PHONY: lwip
 
 # Builds everything.
-all: libc
+all: libc lwip
 
 # Builds C library.
 libc:
 	cd libc/ && $(MAKE) all
 
+# Builds LWIP library.
+libc:
+	cd lwip/ && $(MAKE) all
+
 # Cleans compilation files.
 clean:
 	cd libc && $(MAKE) clean
+	cd lwip && $(MAKE) clean

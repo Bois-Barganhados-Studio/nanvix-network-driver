@@ -33,6 +33,10 @@
 	typedef __UINT16_TYPE__ uint16_t; /* 16-bit integer. */
 	typedef __UINT32_TYPE__ uint32_t; /* 32-bit integer. */
 	typedef __UINT64_TYPE__ uint64_t; /* 64-bit integer. */
+	
+	/* Int pointers. */
+	typedef	int	intptr_t;
+	typedef	unsigned int uintptr_t;
 
 #endif /* _ASM_FILE_*/
 

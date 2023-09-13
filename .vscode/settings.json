@@ -1,0 +1,11 @@
+{
+    "files.associations": {
+        "altcp_tcp.h": "c",
+        "http_client.h": "c",
+        "stdio.h": "c",
+        "cc.h": "c",
+        "stddef.h": "c",
+        "times.h": "c",
+        "utime.h": "c"
+    }
+}

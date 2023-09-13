@@ -43,10 +43,15 @@
 .PHONY: clear
 .PHONY: nim
 .PHONY: sleep
+.PHONY: leon
 
 # Builds everything.
 all: cat chgrp chmod chown cp echo kill ln login ls mv nice pwd rm stat sync \
-	 touch tsh ps clear nim sleep
+	 touch tsh ps clear nim sleep leon
+
+# Builds leon.
+leon: 
+	$(CC) $(CFLAGS) $(LDFLAGS) leon/*.c -o $(UBINDIR)/leon $(LIBDIR)/libc.a
 
 # Builds cat.
 cat: 
@@ -171,3 +176,4 @@ clean:
 	@rm -f $(UBINDIR)/clear
 	@rm -f $(UBINDIR)/nim
 	@rm -f $(UBINDIR)/sleep
+	@rm -f $(UBINDIR)/leon

@@ -31,4 +31,6 @@
 	#define _NEED_SIZE_T
 	#include <decl.h>
 
+	typedef long int ptrdiff_t; /**< Pointer difference. */
+
 #endif /* _STDDEF_H_ */

@@ -163,6 +163,11 @@
 	 */
 	extern int vsprintf(char *string, const char *format, va_list args);
 
+	/*
+	 * Writes format output of a stnprintf argument list to a file.
+	 */
+	extern int snprintf(char *str, size_t n, const char *fmt, ...);
+
 	/* Standard file streams. */
 	extern FILE *stdin;  /* Standard input.  */
 	extern FILE *stdout; /* Standard output. */
