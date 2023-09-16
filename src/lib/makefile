@@ -29,7 +29,8 @@ libc:
 	cd libc/ && $(MAKE) all
 
 # Builds LWIP library.
-libc:
+# libc:
+lwip:
 	cd lwip/ && $(MAKE) all
 
 # Cleans compilation files.

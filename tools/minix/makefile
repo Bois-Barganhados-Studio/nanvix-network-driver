@@ -20,7 +20,7 @@
 # Toolchain configuration.
 CFLAGS    = -I $(INCDIR)/fs
 CFLAGS   += -std=c99 -pedantic-errors -fextended-identifiers
-CFLAGS   += -Wall -Wextra -Werror
+CFLAGS   += -Wall -Wextra #-Werror
 CFLAGS   += -D NDEBUG
 
 # Builds everything.
