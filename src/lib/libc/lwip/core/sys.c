@@ -120,6 +120,8 @@
 
 #include "lwip/sys.h"
 
+#include <sys/times.h>
+
 /* Most of the functions defined in sys.h must be implemented in the
  * architecture-dependent file sys_arch.c */
 
@@ -146,3 +148,17 @@ sys_msleep(u32_t ms)
 #endif /* sys_msleep */
 
 #endif /* !NO_SYS */
+
+unsigned int
+lwip_port_rand(void)
+{
+  return (unsigned int)rand();
+}
+
+u32_t
+sys_now(void)
+{
+  u32_t now;
+  now = (u32_t)times(NULL);
+  return now;
+}

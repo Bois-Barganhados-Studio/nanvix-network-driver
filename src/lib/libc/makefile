@@ -37,6 +37,24 @@ C_SRC = $(wildcard *.c)           \
       $(wildcard termios/*.c)     \
       $(wildcard unistd/*.c)      \
       $(wildcard utime/*.c)       \
+      $(wildcard lwip/*.c)           \
+      $(wildcard lwip/api/*.c)      \
+	$(wildcard lwip/apps/altcp_tls/*.c)   \
+	$(wildcard lwip/apps/http/*.c)   \
+      $(wildcard lwip/apps/lwiperf/*.c)     \
+	$(wildcard lwip/apps/mnds/*.c)   \
+	$(wildcard lwip/apps/mqtt/*.c)   \
+	$(wildcard lwip/apps/netbiosns/*.c)   \
+      $(wildcard lwip/apps/smtp/*.c)   \
+	$(wildcard lwip/apps/snmp/*.c)   \
+	$(wildcard lwip/apps/sntp/*.c)   \
+	$(wildcard lwip/apps/tftp/*.c)   \
+	$(wildcard lwip/core/*.c)   \
+	$(wildcard lwip/core/ipv4/*.c)   \
+	$(wildcard lwip/core/ipv6/*.c)   \
+	$(wildcard lwip/netif/ppp/*.c)   \
+	$(wildcard lwip/netif/*.c)   \
+	$(wildcard lwip/netif/ppp/polarssl/*.c)   \
 
 # Assembly source files.
 ASM_SRC = $(wildcard signal/*.S) \

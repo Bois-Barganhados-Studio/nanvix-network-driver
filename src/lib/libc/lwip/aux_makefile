@@ -41,16 +41,12 @@ C_SRC = $(wildcard *.c)           \
 # Object files.
 OBJ = $(C_SRC:.c=.o)   \
 
-# Library name.
-LIB = lwip.a
+all: 
+	$(CC) $(CFLAGS) $(LDFLAGS) $(OBJ) -o $(UBINDIR)/lwip $(LIBDIR)/libc.a
 
-# Builds the C library.
-all: $(OBJ)
-	$(AR) $(ARFLAGS) $(LIBDIR)/$(LIB) $^
-
-# Builds object file from C source file.
-%.o: %.c
-	$(CC) $< $(CFLAGS) -c -o $@
+# # Builds object file from C source file.
+# %.o: %.c
+# 	$(CC) $< $(CFLAGS) $(LDFLAGS) -c -o $@ $(LIBDIR)/libc.a
 
 # Cleans compilation files.
 clean:

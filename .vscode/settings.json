@@ -6,6 +6,10 @@
         "cc.h": "c",
         "stddef.h": "c",
         "times.h": "c",
-        "utime.h": "c"
+        "utime.h": "c",
+        "types.h": "c",
+        "stat.h": "c",
+        "string.h": "c",
+        "opt.h": "c"
     }
 }
