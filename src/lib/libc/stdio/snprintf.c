@@ -16,7 +16,7 @@
 #define vsnprintf my_vsnprintf
 #endif /* SNPRINTF_TEST */
 
-int snprintf(char* str, size_t size, const char* format, ...);
+// int snprintf(char* str, size_t size, const char* format, ...);
 int vsnprintf(char* str, size_t size, const char* format, va_list arg);
 
 /**
@@ -102,7 +102,7 @@ print_dec_l(char* buf, int max, unsigned long value)
 
 /** print long decimal into buffer, returns length */
 static int
-print_dec_ll(char* buf, int max, unsigned long long value)
+print_dec_ll(char* buf, int max, unsigned long value)
 {
 	int i = 0;
 	if(value == 0) {
@@ -153,9 +153,9 @@ print_hex_l(char* buf, int max, unsigned long value)
 	return i;
 }
 
-/** print long long hex into buffer, returns length */
+/** print long hex into buffer, returns length */
 static int
-print_hex_ll(char* buf, int max, unsigned long long value)
+print_hex_ll(char* buf, int max, unsigned long value)
 {
 	const char* h = "0123456789abcdef";
 	int i = 0;
@@ -288,7 +288,7 @@ print_num_ld(char** at, size_t* left, int* ret, long value,
 
 /** print %lld and %lli */
 static void
-print_num_lld(char** at, size_t* left, int* ret, long long value,
+print_num_lld(char** at, size_t* left, int* ret, long value,
 	int minw, int precision, int prgiven, int zeropad, int minus,
 	int plus, int space)
 {
@@ -296,7 +296,7 @@ print_num_lld(char** at, size_t* left, int* ret, long long value,
 	int negative = (value < 0);
 	int zero = (value == 0);
 	int len = print_dec_ll(buf, (int)sizeof(buf),
-		(unsigned long long)(negative?-value:value));
+		(unsigned long)(negative?-value:value));
 	print_num(at, left, ret, minw, precision, prgiven, zeropad, minus,
 		plus, space, zero, negative, buf, len);
 }
@@ -331,7 +331,7 @@ print_num_lu(char** at, size_t* left, int* ret, unsigned long value,
 
 /** print %llu */
 static void
-print_num_llu(char** at, size_t* left, int* ret, unsigned long long value,
+print_num_llu(char** at, size_t* left, int* ret, unsigned long value,
 	int minw, int precision, int prgiven, int zeropad, int minus,
 	int plus, int space)
 {
@@ -373,7 +373,7 @@ print_num_lx(char** at, size_t* left, int* ret, unsigned long value,
 
 /** print %llx */
 static void
-print_num_llx(char** at, size_t* left, int* ret, unsigned long long value,
+print_num_llx(char** at, size_t* left, int* ret, unsigned long value,
 	int minw, int precision, int prgiven, int zeropad, int minus,
 	int plus, int space)
 {
@@ -396,9 +396,9 @@ print_num_llp(char** at, size_t* left, int* ret, void* value,
 	int zero = (value == 0);
 #if defined(UINTPTR_MAX) && defined(UINT32_MAX) && (UINTPTR_MAX == UINT32_MAX)
 	/* avoid warning about upcast on 32bit systems */
-	unsigned long long llvalue = (unsigned long)value;
+	unsigned long llvalue = (unsigned long)value;
 #else
-	unsigned long long llvalue = (unsigned long long)value;
+	unsigned long llvalue = (unsigned long)value;
 #endif
 	int len = print_hex_ll(buf, (int)sizeof(buf), llvalue);
 	if(zero) {
@@ -424,8 +424,8 @@ print_num_llp(char** at, size_t* left, int* ret, void* value,
 static int
 print_remainder(char* buf, int max, double r, int prec)
 {
-	unsigned long long cap = 1;
-	unsigned long long value;
+	unsigned long cap = 1;
+	unsigned long value;
 	int len, i;
 	if(prec > 19) prec = 19; /* max we can do */
 	if(max < prec) return 0;
@@ -433,9 +433,9 @@ print_remainder(char* buf, int max, double r, int prec)
 		cap *= 10;
 	}
 	r *= (double)cap;
-	value = (unsigned long long)r;
+	value = (unsigned long)r;
 	/* see if we need to round up */
-	if(((unsigned long long)((r - (double)value)*10.0)) >= 5) {
+	if(((unsigned long)((r - (double)value)*10.0)) >= 5) {
 		value++;
 		/* that might carry to numbers before the comma, if so,
 		 * just ignore that rounding. failure because 64bitprintout */
@@ -460,7 +460,7 @@ print_float(char* buf, int max, double value, int prec)
 	   linking with -lm. */
 	/* Thus, the conversions use 64bit integers to convert the numbers,
 	 * which makes 19 digits before and after the decimal point the max */
-	unsigned long long whole = (unsigned long long)value;
+	unsigned long whole = (unsigned long)value;
 	double remain = value - (double)whole;
 	int len = 0;
 	if(prec != 0)
@@ -490,7 +490,7 @@ print_num_f(char** at, size_t* left, int* ret, double value,
 static int
 print_float_g(char* buf, int max, double value, int prec)
 {
-	unsigned long long whole = (unsigned long long)value;
+	unsigned long whole = (unsigned long)value;
 	double remain = value - (double)whole;
 	int before = 0;
 	int len = 0;
@@ -500,7 +500,7 @@ print_float_g(char* buf, int max, double value, int prec)
 		before++;
 		whole /= 10;
 	}
-	whole = (unsigned long long)value;
+	whole = (unsigned long)value;
 
 	if(prec > before && remain != 0.0) {
 		/* see if the last decimals are zero, if so, skip them */
@@ -639,7 +639,7 @@ int vsnprintf(char* str, size_t size, const char* format, va_list arg)
 		 *		this is aftercomma digits for f
 		 *		this is max number significant digits for g
 		 *		maxnumber characters to be printed for s
-		 * length: 0-none (int), 1-l (long), 2-ll (long long)
+		 * length: 0-none (int), 1-l (long), 2-ll (long)
 		 * 	notsupported: hh (char), h (short), L (long double), q, j, z, t
 		 * Does not support %m$ and *m$ argument designation as array indices.
 		 * Does not support %#x
@@ -723,7 +723,7 @@ int vsnprintf(char* str, size_t size, const char* format, va_list arg)
 				minw, precision, prgiven, zeropad, minus, plus, space);
 			else if(length == 2)
 			    print_num_lld(&at, &left, &ret,
-				va_arg(arg, long long),
+				va_arg(arg, long),
 				minw, precision, prgiven, zeropad, minus, plus, space);
 			break;
 		case 'u':
@@ -737,7 +737,7 @@ int vsnprintf(char* str, size_t size, const char* format, va_list arg)
 				minw, precision, prgiven, zeropad, minus, plus, space);
 			else if(length == 2)
 			    print_num_llu(&at, &left, &ret,
-				va_arg(arg, unsigned long long),
+				va_arg(arg, unsigned long),
 				minw, precision, prgiven, zeropad, minus, plus, space);
 			break;
 		case 'x':
@@ -751,7 +751,7 @@ int vsnprintf(char* str, size_t size, const char* format, va_list arg)
 				minw, precision, prgiven, zeropad, minus, plus, space);
 			else if(length == 2)
 			    print_num_llx(&at, &left, &ret,
-				va_arg(arg, unsigned long long),
+				va_arg(arg, unsigned long),
 				minw, precision, prgiven, zeropad, minus, plus, space);
 			break;
 		case 's':
