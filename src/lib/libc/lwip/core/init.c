@@ -338,6 +338,7 @@ PACK_STRUCT_END
 void
 lwip_init(void)
 {
+printf("LWIP init! \n");
 #ifndef LWIP_SKIP_CONST_CHECK
   int a = 0;
   LWIP_UNUSED_ARG(a);

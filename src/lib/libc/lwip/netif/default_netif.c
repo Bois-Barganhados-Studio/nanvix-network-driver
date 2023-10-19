@@ -1,0 +1,142 @@
+/*
+ * Copyright (c) 2001-2003 Swedish Institute of Computer Science.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ * 3. The name of the author may not be used to endorse or promote products
+ *    derived from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR IMPLIED
+ * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT
+ * SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT
+ * OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+ * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
+ * OF SUCH DAMAGE.
+ *
+ * This file is part of the lwIP TCP/IP stack.
+ *
+ * Author: Adam Dunkels <adam@sics.se>
+ *
+ */
+
+#include "lwip/opt.h"
+#include "lwip/netif.h"
+#include "lwip/ip_addr.h"
+#include "lwip/tcpip.h"
+#include "lwip/default_netif.h"
+#include "lwip/stats.h"
+#include "lwip/snmp.h"
+#include "lwip/etharp.h"
+#include "lwip/prot/ethernet.h"
+#include "lwip/prot/ip4.h"
+#include "lwip/prot/udp.h"
+#include "lwip/prot/tcp.h"
+
+// add include to lock and unlock interrupts
+#include "lwip/sys.h"
+
+#define MAC_SEND_BUFFER_SIZE 1500 // Adjust the size according to your needs
+
+#define ETHERNET_MTU 1500
+
+static uint8_t mac_send_buffer[MAC_SEND_BUFFER_SIZE];
+
+static struct netif netif;
+
+void unlock_interrupts()
+{
+  printf("unlocking interrupts\n");
+  // unlock interrupts
+  __asm__ volatile(
+      "sti\n\t");
+  printf("unlocked interrupts\n");
+}
+
+void lock_interrupts()
+{
+  printf("locking interrupts\n");
+  // lock interrupts
+  __asm__ volatile(
+      "cli\n\t");
+  printf("locked interrupts\n");
+}
+
+static err_t
+netif_output(struct netif *netif, struct pbuf *p)
+{
+  LINK_STATS_INC(link.xmit);
+  /* Update SNMP stats (only if you use SNMP) */
+  MIB2_STATS_NETIF_ADD(netif, ifoutoctets, p->tot_len);
+  int unicast = ((*(uint8_t *)(p->payload) & 0x01) == 0);
+  if (unicast)
+  {
+    MIB2_STATS_NETIF_INC(netif, ifoutucastpkts);
+  }
+  else
+  {
+    MIB2_STATS_NETIF_INC(netif, ifoutnucastpkts);
+  }
+  lock_interrupts();
+  pbuf_copy_partial(p, mac_send_buffer, p->tot_len, 0);
+  /* Start MAC transmit here */
+  unlock_interrupts();
+  return ERR_OK;
+}
+static void
+netif_status_callback(struct netif *netif)
+{
+  printf("netif status changed %s\n", ip4addr_ntoa(netif_ip4_addr(netif)));
+}
+static err_t
+my_netif_init(struct netif *netif)
+{
+  printf("init netif sys\n");
+  uint8_t mac_address[ETH_HWADDR_LEN] = {0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC}; // Replace with your MAC address
+  netif->linkoutput = netif_output;
+  netif->output = etharp_output;
+  netif->mtu = ETHERNET_MTU;
+  netif->flags = NETIF_FLAG_BROADCAST | NETIF_FLAG_ETHARP | NETIF_FLAG_ETHERNET | NETIF_FLAG_IGMP | NETIF_FLAG_MLD6;
+  MIB2_INIT_NETIF(netif, snmp_ifType_ethernet_csmacd, 100000000);
+  // add my mac address inside SMEMCPY
+  SMEMCPY(netif->hwaddr, mac_address, ETH_HWADDR_LEN);
+  netif->hwaddr_len = ETH_HWADDR_LEN;
+  printf("init netif sys ended with success\n");
+  return ERR_OK;
+}
+
+#if LWIP_IPV4
+#define NETIF_ADDRS ipaddr, netmask, gw,
+void init_default_netif(const ip4_addr_t *ipaddr, const ip4_addr_t *netmask, const ip4_addr_t *gw)
+#else
+#define NETIF_ADDRS
+void init_default_netif(void)
+#endif
+{
+#if NO_SYS
+  printf("default netif starting add \n");
+  netif_add(&netif, NETIF_ADDRS NULL, my_netif_init, netif_input);
+#else
+  netif_add(&netif, NETIF_ADDRS NULL, tapif_init, tcpip_input);
+#endif
+  netif_set_default(&netif);
+}
+
+void default_netif_poll(void)
+{
+  netif_poll(&netif);
+}
+
+void default_netif_shutdown(void)
+{
+}

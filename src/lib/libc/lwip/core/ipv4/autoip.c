@@ -287,6 +287,7 @@ autoip_start(struct netif *netif)
                  netif->name[1], (u16_t)netif->num));
   }
 
+  printf("autoip_start() ended\n");
   return result;
 }
 
