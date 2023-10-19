@@ -11,7 +11,8 @@ MODE=$3     # Run Mode
 # Global Variables
 export SCRIPT_NAME=$0
 export SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd)"
-
+export MAC_ADDRESS="52:54:00:12:34:56"
+export TAP_INTERFACE="tap0"
 #==============================================================================
 # usage()
 #==============================================================================
@@ -67,7 +68,7 @@ function run_qemu
 			-mem-prealloc"
 
 	cmd="$qemu_cmd -gdb tcp::$GDB_PORT"
-	cmd="$cmd -cdrom $image -hda hdd.img"
+	cmd="$cmd -nic tap,ifname=$TAP_INTERFACE,script=no,downscript=no,mac=$MAC_ADDRESS -cdrom $image -hda hdd.img"
 
 	# Run.
 	if [ $mode == "--debug" ];
