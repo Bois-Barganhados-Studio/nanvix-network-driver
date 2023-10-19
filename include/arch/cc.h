@@ -36,7 +36,7 @@
 #if defined __ANDROID__
 #define LWIP_UNIX_ANDROID
 #elif defined __linux__
-#define LWIP_UNIX_LINUX
+//#define LWIP_UNIX_LINUX
 #elif defined __APPLE__
 #define LWIP_UNIX_MACH
 #elif defined __OpenBSD__
