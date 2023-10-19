@@ -615,7 +615,6 @@ main_loop(void)
 #endif /* NO_SYS */
 
 #if USE_ETHERNET
-    printf("waiting for packet\n");
     default_netif_poll();
 #else /* USE_ETHERNET */
     /* try to read characters from serial line and pass them to PPPoS */

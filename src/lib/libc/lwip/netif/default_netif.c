@@ -46,7 +46,7 @@
 // add include to lock and unlock interrupts
 #include "lwip/sys.h"
 
-#define MAC_SEND_BUFFER_SIZE 1500 // Adjust the size according to your needs
+#define MAC_SEND_BUFFER_SIZE 2 * 4096 // Adjust the size according to your needs
 
 #define ETHERNET_MTU 1500
 
@@ -58,8 +58,7 @@ void unlock_interrupts()
 {
   printf("unlocking interrupts\n");
   // unlock interrupts
-  __asm__ volatile(
-      "sti\n\t");
+  // __asm__ volatile("sti");
   printf("unlocked interrupts\n");
 }
 
@@ -67,14 +66,14 @@ void lock_interrupts()
 {
   printf("locking interrupts\n");
   // lock interrupts
-  __asm__ volatile(
-      "cli\n\t");
+  // __asm__ volatile("cli");
   printf("locked interrupts\n");
 }
 
 static err_t
 netif_output(struct netif *netif, struct pbuf *p)
 {
+  printf("NETIF OUTPUT start \n");
   LINK_STATS_INC(link.xmit);
   /* Update SNMP stats (only if you use SNMP) */
   MIB2_STATS_NETIF_ADD(netif, ifoutoctets, p->tot_len);
@@ -87,9 +86,14 @@ netif_output(struct netif *netif, struct pbuf *p)
   {
     MIB2_STATS_NETIF_INC(netif, ifoutnucastpkts);
   }
+  printf("Try lock interrupts \n");
   lock_interrupts();
-  pbuf_copy_partial(p, mac_send_buffer, p->tot_len, 0);
+  printf("Locked! \n");
+  pbuf_copy_partial(p, mac_send_buffer, MAC_SEND_BUFFER_SIZE, 0);
+  printf("PBUF copy ok! \n");
   /* Start MAC transmit here */
+  // Prinf the buffer here
+  printf("%d %d \n", mac_send_buffer, -1);
   unlock_interrupts();
   return ERR_OK;
 }
@@ -102,7 +106,8 @@ static err_t
 my_netif_init(struct netif *netif)
 {
   printf("init netif sys\n");
-  uint8_t mac_address[ETH_HWADDR_LEN] = {0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC}; // Replace with your MAC address
+  printf("MAC ADDRESS: 52:54:00:12:34:56 \n");
+  uint8_t mac_address[ETH_HWADDR_LEN] = {0x52, 0x54, 0x00, 0x12, 0x34, 0x56}; // Replace with your MAC address
   netif->linkoutput = netif_output;
   netif->output = etharp_output;
   netif->mtu = ETHERNET_MTU;
