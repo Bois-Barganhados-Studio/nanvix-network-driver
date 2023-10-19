@@ -43,7 +43,7 @@
 #define MEM_LIBC_MALLOC             1
 #define MEMP_MEM_MALLOC             1
 #define MEM_ALIGNMENT               4
-#define MEM_SIZE                    2 * 1600
+#define MEM_SIZE                    8 * 1600
 #define MEMP_NUM_PBUF               16
 #define MEMP_NUM_UDP_PCB            4
 #define MEMP_NUM_TCP_PCB            4
@@ -65,9 +65,9 @@
 #define LWIP_UDP                    1
 #define LWIP_DNS                    0
 #define LWIP_TCP                    1
-#define LWIP_ICMP                   0
-#define LWIP_BROADCAST_PING         0
-#define LWIP_MULTICAST_PING         0
+#define LWIP_ICMP                   1
+#define LWIP_BROADCAST_PING         1
+#define LWIP_MULTICAST_PING         1
 #define LWIP_RAW                    1
 #define TCP_WND                     (4 * TCP_MSS)
 #define TCP_MSS                     1460
@@ -87,7 +87,8 @@
 #define ETH_PAD_SIZE                2
 #define LWIP_CHKSUM_ALGORITHM       2
 #define SYS_LIGHTWEIGHT_PROT        0
-
+#define LWIP_DEBUG                  1
 #define LWIP_TCP_KEEPALIVE          0
+#define LWIP_HAVE_LOOPIF            1
 
 #endif /* __LWIPOPTS_H__ */
