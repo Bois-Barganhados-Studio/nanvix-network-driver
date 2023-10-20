@@ -10,6 +10,17 @@
         "types.h": "c",
         "stat.h": "c",
         "string.h": "c",
-        "opt.h": "c"
+        "opt.h": "c",
+        "mld6.h": "c",
+        "if.h": "c",
+        "autoip.h": "c",
+        "httpd.h": "c",
+        "sys.h": "c",
+        "netif.h": "c",
+        "etharp.h": "c",
+        "default_netif.h": "c",
+        "init.h": "c",
+        "tapif.h": "c",
+        "tcpecho_raw.h": "c"
     }
 }

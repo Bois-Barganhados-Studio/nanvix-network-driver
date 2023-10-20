@@ -237,7 +237,6 @@ void netif_init(void)
  */
 err_t netif_input(struct pbuf *p, struct netif *inp)
 {
-  printf("netif input start \n");
   LWIP_ASSERT_CORE_LOCKED();
 
   LWIP_ASSERT("netif_input: invalid pbuf", p != NULL);

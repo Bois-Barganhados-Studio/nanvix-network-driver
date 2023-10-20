@@ -1,58 +1,135 @@
-// LWIP Test File
+#include "lwip/opt.h"
+
+#include "lwip/netif.h"
+#include "lwip/ip_addr.h"
+#include "lwip/tcpip.h"
+#include "netif/tapif.h"
+#include "lwip/init.h"
+#include "lwip/stats.h"
+#include "lwip/ip_addr.h"
+#include "lwip/ip.h"
+
+static struct netif netif;
+
+#define  SEED_RAND 0x12345678
+
+#if LWIP_IPV4
+#define NETIF_ADDRS ipaddr, netmask, gw,
+void init_default_netif(const ip4_addr_t *ipaddr, const ip4_addr_t *netmask, const ip4_addr_t *gw)
+#else
+#define NETIF_ADDRS
+void init_default_netif(void)
+#endif
+{
+#if NO_SYS
+netif_add(&netif, NETIF_ADDRS NULL, tapif_init, netif_input);
+#else
+  netif_add(&netif, NETIF_ADDRS NULL, tapif_init, tcpip_input);
+#endif
+  netif_set_default(&netif);
+}
+
+void
+default_netif_poll(void)
+{
+  tapif_poll(&netif);
+}
+
+void
+default_netif_shutdown(void)
+{
+}
+
+
+/*
+ * Copyright (c) 2001,2002 Florian Schulze.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ * 3. Neither the name of the authors nor the names of the contributors
+ *    may be used to endorse or promote products derived from this software
+ *    without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE AUTHORS AND CONTRIBUTORS ``AS IS'' AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHORS OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGE.
+ *
+ * test.c - This file is part of lwIP test
+ *
+ */
 
 /* C runtime includes */
 #include <stdio.h>
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/times.h>
 
 /* lwIP core includes */
-#include <lwip/opt.h>
+#include "lwip/opt.h"
 
-#include <lwip/sys.h>
-#include <lwip/timeouts.h>
-#include <lwip/debug.h>
-#include <lwip/stats.h>
-#include <lwip/init.h>
-#include <lwip/tcpip.h>
-#include <lwip/netif.h>
-#include <lwip/api.h>
+#include "lwip/sys.h"
+#include "lwip/timeouts.h"
+#include "lwip/debug.h"
+#include "lwip/stats.h"
+#include "lwip/init.h"
+#include "lwip/tcpip.h"
+#include "lwip/netif.h"
+#include "lwip/api.h"
 
-#include <lwip/tcp.h>
-#include <lwip/udp.h>
-#include <lwip/dns.h>
-#include <lwip/dhcp.h>
-#include <lwip/autoip.h>
+#include "lwip/tcp.h"
+#include "lwip/udp.h"
+#include "lwip/dns.h"
+#include "lwip/dhcp.h"
+#include "lwip/autoip.h"
 
 /* lwIP netif includes */
-#include <lwip/etharp.h>
-#include <netif/ethernet.h>
+#include "lwip/etharp.h"
+#include "netif/ethernet.h"
 
 /* applications includes */
-#include <lwip/apps/netbiosns.h>
-#include <lwip/apps/httpd.h>
-
-#include <lwip/default_netif.h>
+#include "lwip/apps/netbiosns.h"
+#include "lwip/apps/httpd.h"
+#include "lwip/apps/httpd_opts.h"
+#include "lwip/pingapp.h"
+#include "lwip/tcpecho.h"
+#include "lwip/tcpecho_raw.h"
 
 #if NO_SYS
 /* ... then we need information about the timer intervals: */
-#include <lwip/ip4_frag.h>
-#include <lwip/igmp.h>
-#define RANDOM_NUMBER_SEED 0x12345678
+#include "lwip/ip4_frag.h"
+#include "lwip/igmp.h"
 #endif /* NO_SYS */
 
-#include <netif/ppp/ppp_opts.h>
+#include "netif/ppp/ppp_opts.h"
 #if PPP_SUPPORT
 /* PPP includes */
-#include <lwip/sio.h>
-#include <netif/ppp/pppapi.h>
-#include <netif/ppp/pppos.h>
-#include <netif/ppp/pppoe.h>
+#include "lwip/sio.h"
+#include "netif/ppp/pppapi.h"
+#include "netif/ppp/pppos.h"
+#include "netif/ppp/pppoe.h"
 #if !NO_SYS && !LWIP_PPP_API
 #error With NO_SYS==0, LWIP_PPP_API==1 is required.
 #endif
 #endif /* PPP_SUPPORT */
+
+/* include the port-dependent configuration */
+#include "lwip/lwipcfg.h"
 
 #ifndef LWIP_EXAMPLE_APP_ABORT
 #define LWIP_EXAMPLE_APP_ABORT() 0
@@ -546,7 +623,6 @@ apps_init(void)
 static void
 test_init(void * arg)
 { /* remove compiler warning */
-printf("Test init \n");
 #if NO_SYS
   LWIP_UNUSED_ARG(arg);
 #else /* NO_SYS */
@@ -556,7 +632,7 @@ printf("Test init \n");
 #endif /* NO_SYS */
 
   /* init randomizer again (seed per thread) */
-  srand(RANDOM_NUMBER_SEED);
+  srand(SEED_RAND);
 
   /* init network interfaces */
   test_netif_init();
@@ -701,11 +777,10 @@ int main(void)
   printf("Using serial port %d for PPP\n", sio_idx);
 #endif /* USE_PPP && PPPOS_SUPPORT */
   /* no stdio-buffering, please! */
-  printf("Teste\n");
   setvbuf(stdout, NULL,_IONBF, 0);
-  printf("Main loop!\n");
-  main_loop();  
-  printf("Ended!");
+
+  main_loop();
+
   return 0;
 }
 
@@ -718,14 +793,3 @@ void lwip_example_app_platform_assert(const char *msg, int line, const char *fil
   fflush(NULL);
   abort();
 }
-
-
-
-
-// int main(){
-//     printf("LWIP starting ... \n");
-//     lwip_init();
-//     printf("LWIP started! \n");
-//     printf("Test passed! \n");
-//     return 0;
-// }

@@ -186,14 +186,15 @@ PUBLIC int cdev_close(dev_t dev)
  *============================================================================*/
 
 /* Number of block devices. */
-#define NR_BLKDEV 2
+#define NR_BLKDEV 3
 
 /*
  * Block devices table.
  */
 PRIVATE const struct bdev *bdevsw[NR_BLKDEV] = {
 	NULL, /* /dev/ramdisk */
-	NULL  /* /dev/hdd     */
+	NULL,  /* /dev/hdd     */
+	NULL, /* /dev/tap0 */
 };
 
 /*
