@@ -36,7 +36,7 @@
 #include "lwip/ip_addr.h"
 
 #if LWIP_IPV4
-void init_default_netif(const ip4_addr_t *ipaddr, const ip4_addr_t *netmask, const ip4_addr_t *gw);
+void init_default_netif(const ip4_addr_t *ipaddr, const ip4_addr_t *netmask, const ip4_addr_t *gw, int node_id);
 #else
 void init_default_netif(void);
 #endif

@@ -21,6 +21,7 @@
         "default_netif.h": "c",
         "init.h": "c",
         "tapif.h": "c",
-        "tcpecho_raw.h": "c"
+        "tcpecho_raw.h": "c",
+        "syscall.h": "c"
     }
 }
