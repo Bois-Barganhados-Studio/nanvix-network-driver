@@ -29,19 +29,16 @@
  * Author: Adam Dunkels <adam@sics.se>
  *
  */
+#ifndef LWIP_TAPIF_H
+#define LWIP_TAPIF_H
 
-#ifndef LWIP_DEFAULT_NETIF_H
-#define LWIP_DEFAULT_NETIF_H
+#include "lwip/netif.h"
 
-#include "lwip/ip_addr.h"
+struct tapif;
+err_t tapif_init(struct netif *netif);
+void tapif_poll(struct netif *netif);
+#if NO_SYS
+int tapif_select(struct netif *netif);
+#endif /* NO_SYS */
 
-#if LWIP_IPV4
-void init_default_netif(const ip4_addr_t *ipaddr, const ip4_addr_t *netmask, const ip4_addr_t *gw, int node_id);
-#else
-void init_default_netif(void);
-#endif
-
-void default_netif_poll(void);
-void default_netif_shutdown(void);
-
-#endif
+#endif /* LWIP_TAPIF_H */

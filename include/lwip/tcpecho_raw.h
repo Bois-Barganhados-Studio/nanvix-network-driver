@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2001-2003 Swedish Institute of Computer Science.
+ * Copyright (c) 2001-2004 Swedish Institute of Computer Science.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -26,22 +26,10 @@
  *
  * This file is part of the lwIP TCP/IP stack.
  *
- * Author: Adam Dunkels <adam@sics.se>
- *
  */
+#ifndef LWIP_TCPECHO_RAW_H
+#define LWIP_TCPECHO_RAW_H
 
-#ifndef LWIP_DEFAULT_NETIF_H
-#define LWIP_DEFAULT_NETIF_H
+void tcpecho_raw_init(void);
 
-#include "lwip/ip_addr.h"
-
-#if LWIP_IPV4
-void init_default_netif(const ip4_addr_t *ipaddr, const ip4_addr_t *netmask, const ip4_addr_t *gw, int node_id);
-#else
-void init_default_netif(void);
-#endif
-
-void default_netif_poll(void);
-void default_netif_shutdown(void);
-
-#endif
+#endif /* LWIP_TCPECHO_RAW_H */

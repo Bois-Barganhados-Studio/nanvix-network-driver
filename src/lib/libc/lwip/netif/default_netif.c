@@ -42,6 +42,7 @@
 #include "lwip/prot/ip4.h"
 #include "lwip/prot/udp.h"
 #include "lwip/prot/tcp.h"
+#include "sys/times.h"
 
 // add include to lock and unlock interrupts
 #include "lwip/sys.h"
@@ -53,6 +54,47 @@
 static uint8_t mac_send_buffer[MAC_SEND_BUFFER_SIZE];
 
 static struct netif netif;
+static int node_number = -1;
+
+float do_float_calc(float start_num)
+{
+  double resp = start_num;
+  int i = 1;
+  while (i <= 10000000)
+  {
+    resp *= i;
+    i++;
+  }
+  return resp;
+}
+
+float sum_float()
+{
+  float resp = -1.0f;
+  switch (node_number)
+  {
+  case 1:
+    printf("Processing mult float using Node 1 \n");
+    resp = do_float_calc(1.0f);
+    break;
+  case 2:
+    printf("Processing mult float using Node 2 \n");
+    resp = do_float_calc(10000.0f);
+    break;
+  case 3:
+    resp = do_float_calc(20000.0f);
+    printf("Processing mult float using Node 3 \n");
+    break;
+  case 4:
+    resp = do_float_calc(30000.0f);
+    printf("Processing mult float using Node 4 \n");
+    break;
+  default:
+    printf("Node not found \n");
+    break;
+  }
+  return resp;
+}
 
 void unlock_interrupts()
 {
@@ -86,15 +128,23 @@ netif_output(struct netif *netif, struct pbuf *p)
   {
     MIB2_STATS_NETIF_INC(netif, ifoutnucastpkts);
   }
+  clock_t start = times(NULL);
   printf("Try lock interrupts \n");
   lock_interrupts();
   printf("Locked! \n");
   pbuf_copy_partial(p, mac_send_buffer, MAC_SEND_BUFFER_SIZE, 0);
   printf("PBUF copy ok! \n");
-  /* Start MAC transmit here */
-  // Prinf the buffer here
-  printf("%d %d \n", mac_send_buffer, -1);
+  // do calc on data
+  float resp = sum_float();
+  printf("Calculated with success! \n");
   unlock_interrupts();
+  // write response at the end of the buffer
+  *(float *)(mac_send_buffer + MAC_SEND_BUFFER_SIZE - sizeof(float)) = resp;
+  printf("Write done! \n");
+  clock_t end = times(NULL);
+  int time = (int)(end - start);
+  printf("Time: %d \n", time);
+  printf("NETIF OUTPUT end \n");
   return ERR_OK;
 }
 static void
@@ -106,8 +156,7 @@ static err_t
 my_netif_init(struct netif *netif)
 {
   printf("init netif sys\n");
-  printf("MAC ADDRESS: 52:54:00:12:34:56 \n");
-  uint8_t mac_address[ETH_HWADDR_LEN] = {0x52, 0x54, 0x00, 0x12, 0x34, 0x56}; // Replace with your MAC address
+  uint8_t mac_address[ETH_HWADDR_LEN] = {0x52, 0x54, 0x00, 0x12, 0x34, 0x56 + node_number}; // Replace with your MAC address
   netif->linkoutput = netif_output;
   netif->output = etharp_output;
   netif->mtu = ETHERNET_MTU;
@@ -122,12 +171,13 @@ my_netif_init(struct netif *netif)
 
 #if LWIP_IPV4
 #define NETIF_ADDRS ipaddr, netmask, gw,
-void init_default_netif(const ip4_addr_t *ipaddr, const ip4_addr_t *netmask, const ip4_addr_t *gw)
+void init_default_netif(const ip4_addr_t *ipaddr, const ip4_addr_t *netmask, const ip4_addr_t *gw, int node_id)
 #else
 #define NETIF_ADDRS
 void init_default_netif(void)
 #endif
 {
+  node_number = node_id;
 #if NO_SYS
   printf("default netif starting add \n");
   netif_add(&netif, NETIF_ADDRS NULL, my_netif_init, netif_input);
